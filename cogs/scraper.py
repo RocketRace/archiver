@@ -15,6 +15,8 @@ class Scraper(commands.Cog):
     @commands.command()
     async def archive(self, ctx, limit: int = 100, *, channel: commands.TextChannelConverter()):
         # Feedback for the user
+        userMessage = "Working..." if bool(limit) else "Working... This may take several minutes."
+        await ctx.send(userMessage)
         await ctx.trigger_typing()
 
         # Limit of 0 -> no limit
@@ -67,14 +69,17 @@ class Scraper(commands.Cog):
             ### === AVATAR ===
 
             # Determines whether or not to save an animated avatar
-            avatarFormat = "gif" if message.author.is_avatar_animated() else "webp"
+            # Currently animated avatars are not supported.
+            avatarFormat = "webp" 
+            # avatarFormat = "gif" if message.author.is_avatar_animated() else "webp"
             
             # Avatar identifier
             avatarName = f"{message.author.id}.{avatarFormat}"
 
             # Saves the author's current avatar to disk if it does not exist yet
             if not isfile(f"archives/users/{avatarName}"):
-                await message.author.avatar_url.save(f"archives/users/{avatarName}")
+                await message.author.avatar_url_as(format=avatarFormat)\
+                    .save(f"archives/users/{avatarName}")
 
             ### === EMBEDS ===
 
@@ -88,12 +93,13 @@ class Scraper(commands.Cog):
                 "attachments" : attachmentNames,
                 "author"      : {
                     "avatar"  : avatarName,
+                    "id"      : message.author.id,
                     "nick"    : message.author.display_name
                 },
                 "content"     : message.system_content,
                 "created_at"  : message.created_at.isoformat(),
                 "embeds"      : embeds,
-                "type"        : message.type
+                "type"        : message.type[0]
             }
             
             # Stores the message

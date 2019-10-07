@@ -1,5 +1,5 @@
 config.json
 log.txt
-__pycache__/*
+**/__pycache__/*
 .vscode/*
 archives/*
