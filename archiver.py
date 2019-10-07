@@ -1,9 +1,11 @@
 import discord
 import logging
+import traceback
 
 from datetime    import datetime
 from discord.ext import commands
 from json        import load
+from sys         import stderr
 
 # Sets up the bot
 prefixes = None
@@ -35,6 +37,9 @@ async def on_command_error(ctx, error):
     # Logs the error
     logger = logging.getLogger("discord")
     logger.warning(errorTitle + errorMessage)
+
+    # Prints the error message as well
+    traceback.print_exception(type(error), error, error.__traceback__, file=stderr)
 
     # Ignore these errors when sending error messages to the user
     ignored = (commands.CommandNotFound,)
@@ -72,4 +77,4 @@ async def logout(ctx):
     await bot.logout()
 
 # Starts the event loop
-bot.run(token)
+bot.run(token, reconnect=True, bot=True)

@@ -1,5 +1,6 @@
 import discord
 
+from asyncio     import sleep
 from collections import Counter
 from datetime    import datetime
 from discord.ext import commands
@@ -92,7 +93,7 @@ class Cloner(commands.Cog):
                 avatarFile = open(f"archives/users/{avatarPath}", "rb").read()
 
                 # If there are already 10 webhooks, replace the first
-                if len(webhooks) == 10:
+                if len(webhooks) >= 10:
                     # Gets the key of the least used webhook
                     leastUsed = min(webhookUsage.items(), key=lambda x: x[1])[0] 
                     # Pops the key
@@ -129,18 +130,13 @@ class Cloner(commands.Cog):
 
             # Increment the processed message counter
             messageCount += 1
+
+            # Hard-coded channel ratelimit because discord keeps kicking us
+            if messageCount % 30 == 0: 
+                await sleep(60)
         
         # User output message
         await ctx.send(f"{ctx.author.mention} Done. Created {messageCount} messages in {channel.mention}.")
-
-
-                
-
-
-
-
-
-
 
 # Imports the cog to the bot
 def setup(bot):
