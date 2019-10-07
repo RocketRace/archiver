@@ -1,6 +1,6 @@
 import discord
 
-from collections import OrderedDict
+from collections import Counter
 from datetime    import datetime
 from discord.ext import commands
 from json        import load
@@ -53,7 +53,8 @@ class Cloner(commands.Cog):
         webhooks = await channel.webhooks()
         for webhook in webhooks:
             await webhook.delete()
-        webhooks = OrderedDict() # To maintain order
+        webhooks = {}
+        webhookUsage = Counter()
 
         # Determines what the webhook name should be for messages of a given type.
         # False => Use the provided user display name.
@@ -73,7 +74,7 @@ class Cloner(commands.Cog):
         }
 
         # Clones each message in the archive
-        counter = 0
+        messageCount = 0
         for message in archive:
             
             # Checks if the author already has a webhook representation
@@ -81,22 +82,31 @@ class Cloner(commands.Cog):
             webhook = webhooks.get(authorID)
             if webhook is None:
 
-                # If there are already 10 webhooks, replace the first
-                if len(webhooks) == 10:
-                    webhooks.popitem(last=False) # Pops the first entry
-
                 # Determines the webhook name
                 name = messageTypes[message["type"]]
                 if name is False:
                     name = message["author"]["nick"]
-                
+
                 # Gets the user avatar
                 avatarPath = message["author"]["avatar"]
                 avatarFile = open(f"archives/users/{avatarPath}", "rb").read()
 
-                # If the webhook doesn't exist, create one
-                webhook = await channel.create_webhook(name=name, avatar=avatarFile)
-                webhooks[authorID] = webhook
+                # If there are already 10 webhooks, replace the first
+                if len(webhooks) == 10:
+                    # Gets the key of the least used webhook
+                    leastUsed = min(webhookUsage.items(), key=lambda x: x[1])[0] 
+                    # Pops the key
+                    webhookUsage.pop(leastUsed)
+                    # Edits that webhook
+                    await webhooks[leastUsed].edit(name=name, avatar=avatarFile)
+                    
+                else:
+                    # If there are less than 10 webhooks, create more
+                    webhook = await channel.create_webhook(name=name, avatar=avatarFile)
+                    webhooks[authorID] = webhook
+
+            # Increment the counter for the current author
+            webhookUsage[authorID] += 1
             
             # Gets message embeds
             embedDicts = message["embeds"]
@@ -112,9 +122,9 @@ class Cloner(commands.Cog):
 
             # Sends the message to the channel
             await webhook.send(content=content, embeds=embeds, files=attachmentFiles)
-            counter += 1
+            messageCount += 1
         
-        await ctx.send(f"{ctx.author.mention} Done. Created {counter} messages in {channel.mention}.")
+        await ctx.send(f"{ctx.author.mention} Done. Created {messageCount} messages in {channel.mention}.")
 
 
                 
