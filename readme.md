@@ -10,8 +10,8 @@ Archives a channel, and returns the name of the archived file.
 
 Parameters:
 
-`limit` : Int
-`channel` : An ID, channel mention or channel name.
+* `limit` : Int
+* `channel` : An ID, channel mention or channel name.
 
 `clone [file] [channel]`
 
@@ -19,8 +19,8 @@ Restores an archived channel.
 
 Parameters:
 
-`file` : The archive filename to restore. This must be the name of an existing archive, as returned by `archive`.
-`channel` : An ID, channel mention or channel name.
+* `file` : The archive filename to restore. This must be the name of an existing archive, as returned by `archive`.
+* `channel` : An ID, channel mention or channel name.
 
 Notes:
 
