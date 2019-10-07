@@ -121,9 +121,16 @@ class Cloner(commands.Cog):
             content = message["content"]
 
             # Sends the message to the channel
-            await webhook.send(content=content, embeds=embeds, files=attachmentFiles)
+            output = await webhook.send(content=content, embeds=embeds, files=attachmentFiles, wait=True)
+
+            # Adds the correct reactions to the message
+            for emoji in message["reactions"]:
+                await output.add_reaction(emoji)
+
+            # Increment the processed message counter
             messageCount += 1
         
+        # User output message
         await ctx.send(f"{ctx.author.mention} Done. Created {messageCount} messages in {channel.mention}.")
 
 

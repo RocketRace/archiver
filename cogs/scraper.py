@@ -89,6 +89,12 @@ class Scraper(commands.Cog):
             # Copies the message embed data as-is
             embeds = [e.to_dict() for e in message.embeds]
 
+            ### === REACTIONS ===
+
+            # Gets the message reactions
+            allReactions = message.reactions
+            unicodeReactions = [r.emoji for r in allReactions if not r.custom_emoji]
+
             ### === MESSAGE ===
 
             #  Stores the message information necessary for a backup
@@ -102,6 +108,7 @@ class Scraper(commands.Cog):
                 "content"     : message.system_content,
                 "created_at"  : message.created_at.isoformat(),
                 "embeds"      : embeds,
+                "reactions"   : unicodeReactions,
                 "type"        : message.type[0]
             }
             
