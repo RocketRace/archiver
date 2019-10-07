@@ -35,9 +35,18 @@ class Cloner(commands.Cog):
         with open(f"{sourcePath}/{path}") as archiveFile:
             archive = load(archiveFile)
         
-        # Prepares the channel for cloning.
+        # Prepares the channel for cloning:
         # Wipes the channel
         await channel.purge(limit=100) # Only purges 100 messages, since we likely don't need more.
+        
+        # Opens the channel metadata file
+        metadata = None
+        with open(f"{sourcePath}/metadata_{path}") as metadataFile:
+            metadata = load(metadataFile)
+        
+        # Updates the channel with the metadata
+        await channel.edit(**metadata)
+
         # Up to 10 unique webhooks may exist in a channel at once. 
         # We will use all 10 slots to minimize API calls.
         webhooks = await channel.webhooks()

@@ -49,7 +49,7 @@ class Scraper(commands.Cog):
         }
 
         # Creates and saves the archive metadata file
-        with open(f"{path}/{timestamp}_metadata.json", "x") as metadataFile:
+        with open(f"{path}/metadata_{timestamp}.json", "x") as metadataFile:
             dump(metadata, metadataFile, indent=2)
 
         # Goes through the channel history as specified by the limit.
