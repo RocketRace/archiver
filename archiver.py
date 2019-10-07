@@ -63,8 +63,13 @@ if __name__ == "__main__":
 @bot.command()
 @commands.is_owner()
 async def invite(ctx):
-    link = discord.utils.oauth_url(bot.user.id, permissions=discord.Permissions(536939536))
+    link = discord.utils.oauth_url(bot.user.id, permissions=discord.Permissions(537128048))
     await ctx.send(f"<{link}>")
+
+@bot.command()
+@commands.is_owner()
+async def logout(ctx):
+    await bot.logout()
 
 # Starts the event loop
 bot.run(token)
