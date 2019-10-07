@@ -54,14 +54,16 @@ async def on_command_error(ctx, error):
     await ctx.send(" ", embed=embed)
 
 # Loads the bot's modules
+modules = ("cogs.scraper", "cogs.cloner")
 if __name__ == "__main__":
-    bot.load_extension("scraper")
+    for module in modules:
+        bot.load_extension(module)
 
 # For convenience: Generates an invite link for the bot
 @bot.command()
 @commands.is_owner()
 async def invite(ctx):
-    link = discord.utils.oauth_url(bot.user.id, permissions=discord.Permissions(66560))
+    link = discord.utils.oauth_url(bot.user.id, permissions=discord.Permissions(536939536))
     await ctx.send(f"<{link}>")
 
 # Starts the event loop
