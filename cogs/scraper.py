@@ -44,8 +44,10 @@ class Scraper(commands.Cog):
 
         # Stores the channel metadata
         metadata = {
-            "name" : channel.name,
-            "topic" : channel.topic
+            "name"           : channel.name,
+            "nsfw"           : channel.is_nsfw(),
+            "slowmode_delay" : channel.slowmode_delay,
+            "topic"          : channel.topic
         }
 
         # Creates and saves the archive metadata file
