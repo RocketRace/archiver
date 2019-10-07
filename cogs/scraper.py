@@ -12,6 +12,7 @@ class Scraper(commands.Cog):
         self.bot = bot
 
     # Archives `limit` recent messages from the provided channel onto disk.
+    @commands.is_owner()
     @commands.command()
     async def archive(self, ctx, limit: int = 100, *, channel: commands.TextChannelConverter()):
         # Feedback for the user
