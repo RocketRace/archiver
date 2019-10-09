@@ -2,7 +2,6 @@ import discord
 
 from asyncio     import sleep
 from collections import Counter
-from datetime    import datetime
 from discord.ext import commands
 from json        import load
 from os          import listdir
@@ -10,7 +9,7 @@ from os.path     import isfile
 from time        import time
 
 # Sets up the cloner class
-class Cloner(commands.Cog):
+class Cloner(commands.Cog, name="Cloning:"):
     def __init__(self, bot):
         self.bot = bot
 
@@ -18,14 +17,14 @@ class Cloner(commands.Cog):
     @commands.command()
     async def clone(self, ctx, path, *, channel: commands.TextChannelConverter()):
         '''
-        Takes an archived channel by id and copies its contents to an existing channel.
+        Takes an archived channel by archive id and copies its contents to another channel.
         '''
         async with ctx.typing():
             # Searches through archived channels for the provided archive
             sourcePath = None
             for guild in listdir("archives/guilds"):
                 for sourceChannel in listdir(f"archives/guilds/{guild}"):
-                    if isfile(f"archives/guilds/{guild}/{sourceChannel}/{path}"):
+                    if isfile(f"archives/guilds/{guild}/{sourceChannel}/{path}.json"):
                         sourcePath = f"archives/guilds/{guild}/{sourceChannel}"
             
             # If not found
@@ -34,7 +33,7 @@ class Cloner(commands.Cog):
 
             # Opens the channel archive
             archive = None
-            with open(f"{sourcePath}/{path}") as archiveFile:
+            with open(f"{sourcePath}/{path}.json") as archiveFile:
                 archive = load(archiveFile)
 
             # Messages in the archive
@@ -55,17 +54,17 @@ class Cloner(commands.Cog):
             
             # Opens the channel metadata file
             metadata = None
-            with open(f"{sourcePath}/metadata_{path}") as metadataFile:
+            with open(f"{sourcePath}/metadata_{path}.json") as metadataFile:
                 metadata = load(metadataFile)
             
             # Tweaks the channel name
-            metadata["name"] = metadata["name"] + "-clone"
+            metadata["channel"]["name"] = metadata["channel"]["name"] + "-clone"
             
-            # Updates the channel with the metadata
-            await channel.edit(**metadata)
+            # Updates the channel with the provided metadata
+            await channel.edit(**metadata["channel"])
 
             # Up to 10 unique webhooks may exist in a channel at once. 
-            # We will use all 10 slots to minimize API calls.
+            # We will use all 10 slots to minimize webhook editing API calls.
             webhooks = await channel.webhooks()
             for webhook in webhooks:
                 await webhook.delete()

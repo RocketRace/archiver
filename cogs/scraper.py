@@ -7,19 +7,21 @@ from os          import makedirs
 from os.path     import isfile
 
 # Sets up the scraper class
-class Scraper(commands.Cog):
+class Scraper(commands.Cog, name="Archiving:"):
     def __init__(self, bot):
         self.bot = bot
 
     @commands.is_owner()
     @commands.command()
-    async def archive(self, ctx, limit: int = 100, *, channel: commands.TextChannelConverter()):
+    async def archive(self, ctx, channel: commands.TextChannelConverter(), limit: int = 100):
         '''
-        Archives `limit` recent messages from the provided channel onto disk.
+        Archives [limit] recent messages from the provided channel onto disk.
         '''
         async with ctx.typing():
             # Feedback for the user
-            userMessage = "Working..." if bool(limit) else "Working... This may take several minutes."
+            userMessage = f"Archiving {limit} messages from {channel.mention}..." \
+                if bool(limit) else \
+                f"Archiving all messages from {channel.mention}... This may take several minutes."
             await ctx.send(userMessage)
             await ctx.trigger_typing()
 
@@ -34,7 +36,9 @@ class Scraper(commands.Cog):
                 guild = channel.guild
             
             # The current timestamp, to differentiate archives
-            timestamp = datetime.utcnow().isoformat()
+            timestamp = datetime.utcnow().ctime()
+            # A mostly unique name
+            filename = hash(timestamp) % 1000000
 
             # The path to the archive folder
             path = f"archives/guilds/{guild.id}/{channel.id}"
@@ -45,18 +49,6 @@ class Scraper(commands.Cog):
                 makedirs("archives/users") # For avatars
             except OSError:
                 pass
-
-            # Stores the channel metadata
-            metadata = {
-                "name"           : channel.name,
-                "nsfw"           : channel.is_nsfw(),
-                "slowmode_delay" : channel.slowmode_delay,
-                "topic"          : channel.topic
-            }
-
-            # Creates and saves the archive metadata file
-            with open(f"{path}/metadata_{timestamp}.json", "x") as metadataFile:
-                dump(metadata, metadataFile, indent=2)
 
             # Goes through the channel history as specified by the limit.
             # By default, it goes through only the 100 most recent messages.
@@ -127,11 +119,36 @@ class Scraper(commands.Cog):
             # Compresses the message history
             history = await self.bot.get_cog("Compressor").compress(ctx, history)
 
+            # Stores the channel metadata
+            metadata = {
+                "channel" : {
+                    "name"           : channel.name,
+                    "nsfw"           : channel.is_nsfw(),
+                    "slowmode_delay" : channel.slowmode_delay,
+                    "topic"          : channel.topic
+                },
+                "size"      : len(history),
+                "timestamp" : timestamp
+            }
+
+            # Creates and saves the archive metadata file
+            with open(f"{path}/metadata_{filename}.json", "x") as metadataFile:
+                dump(metadata, metadataFile, indent=2)
+
             # Creates and saves the archive file
-            with open(f"{path}/{timestamp}.json", "x") as archiveFile:
+            filename = hash(timestamp) % 1000000
+            with open(f"{path}/{filename}.json", "x") as archiveFile:
                 dump(history, archiveFile, indent=2)
 
-        await ctx.send(f"{ctx.author.mention} Done. File stored in `{path}` as `{timestamp}.json`.")
+        # Cleans up the prefix from <@id> to @name
+        cleanPrefix = ctx.prefix
+        cleanPrefix = f"@{self.bot.user.name} " if ctx.prefix == self.bot.user.mention + " " else cleanPrefix
+        
+        # Final user message
+        formatted = f"{ctx.author.mention} Done. File stored in `{path}` as `{filename}.json`.\n" + \
+            f"To clone this archive to another channel, run `{cleanPrefix}clone {filename} [channel]`.\n" + \
+            f"To list previously archived channels, run `{cleanPrefix}list`."
+        await ctx.send(formatted)
 
 
 # Imports the cog to the bot

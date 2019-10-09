@@ -15,7 +15,8 @@ with open("config.json") as configFile:
     prefixes = config["prefixes"]
     token = config["token"]
 
-bot = commands.Bot(command_prefix=prefixes, help_command=None)
+helpCommand=commands.MinimalHelpCommand(no_category="Other:")
+bot = commands.Bot(command_prefix=prefixes, help_command=helpCommand)
 
 # Sets up logging of verbosity INFO into a file named "log.txt"
 logger = logging.getLogger("discord")

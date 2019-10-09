@@ -1,10 +1,6 @@
 import discord
 
-from datetime    import datetime
 from discord.ext import commands
-from json        import dump, load
-from os          import makedirs
-from os.path     import isfile
 
 # Sets up the compressor utility class
 class Compressor(commands.Cog):
@@ -46,6 +42,9 @@ class Compressor(commands.Cog):
             else:
                 compressedArchive.append(temporaryMessage)
                 temporaryMessage = message
+        
+        # The last message
+        compressedArchive.append(temporaryMessage)
         
         # Return compression efficiency
         compressionRatio = 100 - round(100 * len(compressedArchive) / len(archive))
