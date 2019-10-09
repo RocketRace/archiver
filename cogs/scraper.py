@@ -118,6 +118,12 @@ class Scraper(commands.Cog):
         # Reverses the history (to oldest first)
         history.reverse()
 
+        # User feedback
+        await ctx.send(f"Scraped {len(history)} messages from {channel.mention}.")
+
+        # Compresses the message history
+        history = await self.bot.get_cog("Compressor").compress(ctx, history)
+
         # Creates and saves the archive file
         with open(f"{path}/{timestamp}.json", "x") as archiveFile:
             dump(history, archiveFile, indent=2)
