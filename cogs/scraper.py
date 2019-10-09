@@ -11,10 +11,12 @@ class Scraper(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    # Archives `limit` recent messages from the provided channel onto disk.
     @commands.is_owner()
     @commands.command()
     async def archive(self, ctx, limit: int = 100, *, channel: commands.TextChannelConverter()):
+        '''
+        Archives `limit` recent messages from the provided channel onto disk.
+        '''
         async with ctx.typing():
             # Feedback for the user
             userMessage = "Working..." if bool(limit) else "Working... This may take several minutes."

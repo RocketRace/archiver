@@ -14,10 +14,12 @@ class Cloner(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    # Takes an archived channel by id and copies its contents to an existing channel.
     @commands.is_owner()
     @commands.command()
     async def clone(self, ctx, path, *, channel: commands.TextChannelConverter()):
+        '''
+        Takes an archived channel by id and copies its contents to an existing channel.
+        '''
         async with ctx.typing():
             # Searches through archived channels for the provided archive
             sourcePath = None

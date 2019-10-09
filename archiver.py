@@ -36,7 +36,7 @@ async def on_command_error(ctx, error):
 
     # Logs the error
     logger = logging.getLogger("discord")
-    logger.warning(errorTitle + errorMessage)
+    logger.warning(errorTitle)
 
     # Prints the error message as well
     traceback.print_exception(type(error), error, error.__traceback__, file=stderr)
@@ -59,22 +59,10 @@ async def on_command_error(ctx, error):
     await ctx.send(" ", embed=embed)
 
 # Loads the bot's modules
-modules = ("cogs.scraper", "cogs.cloner", "cogs.compressor")
+modules = ("cogs.scraper", "cogs.cloner", "cogs.compressor", "cogs.utils")
 if __name__ == "__main__":
     for module in modules:
         bot.load_extension(module)
-
-# For convenience: Generates an invite link for the bot
-@bot.command()
-@commands.is_owner()
-async def invite(ctx):
-    link = discord.utils.oauth_url(bot.user.id, permissions=discord.Permissions(537128048))
-    await ctx.send(f"<{link}>")
-
-@bot.command()
-@commands.is_owner()
-async def logout(ctx):
-    await bot.logout()
 
 # Starts the event loop
 bot.run(token, reconnect=True, bot=True)
