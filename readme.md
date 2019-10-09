@@ -4,31 +4,58 @@ Archives backups of Discord channels, stores them on disk and restores them to o
 
 # Commands
 
-`archive [limit] [channel]`
+All commands are bot owner-only.
 
-Archives a channel, and returns the name of the archived file.
+Commands are detailed in the `help` command.
+
+`archive [channel] [limit]`
+
+Archives a channel, and returns the ID of the archived file.
 
 Parameters:
 
-* `limit` : Int
+* `limit` : How many messages to archive. Defaults to 100.
 * `channel` : An ID, channel mention or channel name.
 
-`clone [file] [channel]`
+`clone [archive ID] [channel]`
 
-Restores an archived channel.
+Restores an archived channel to an existing Discord channel.
 
 Parameters:
 
-* `file` : The archive filename to restore. This must be the name of an existing archive, as returned by `archive`.
+* `archive ID` : The archive to restore. This must be the ID of an existing archive, as returned by `archive` and listed by `list`.
 * `channel` : An ID, channel mention or channel name.
 
 Notes:
 
 Due to API limitations, this takes a long time to execute for larger archives.
 
+`list`
+
+Lists existing archives, including archive ID, guild / channel data, archival date, message count.
+
+# Convenience commands
+
+`logout`
+
+Logs out of the client.
+
+`invite`
+
+Returns an invite URL with the required permissions.
+
+# Hosting
+
+The bot requires a `setup.json` file to run. It must contain the following fields:
+
+* `token` : The bot token
+* `prefixes` : A list of prefix strings the bot will recognize commands using.
+
 # Details
 
-Archive files are stored in the format `archives/guilds/[guild-id]/[channel-id]/[timestamp].json`.
+Logging is done to a `log.txt` file.
+
+Archive files are stored in the format `archives/guilds/[guild ID]/[channel ID]/[archive ID].json`.
 
 Archive files contain the following message data:
 
