@@ -114,7 +114,8 @@ class Scraper(commands.Cog, name="Archiving:"):
             history.reverse()
 
             # User feedback
-            await ctx.send(f"Scraped {len(history)} messages from {channel.mention}.")
+            note = f" (Only found {len(history)})" if len(history) < limit else ""
+            await ctx.send(f"Scraped {len(history)} messages from {channel.mention}{note}.")
 
             # Compresses the message history
             history = await self.bot.get_cog("Compressor").compress(ctx, history)
@@ -145,9 +146,9 @@ class Scraper(commands.Cog, name="Archiving:"):
         cleanPrefix = f"@{self.bot.user.name} " if ctx.prefix == self.bot.user.mention + " " else cleanPrefix
         
         # Final user message
-        formatted = f"{ctx.author.mention} Done. File stored in `{path}` as `{filename}.json`.\n" + \
+        formatted = f"{ctx.author.mention} Done. Archive saved with ID `{filename}`.\n" + \
             f"To clone this archive to another channel, run `{cleanPrefix}clone {filename} [channel]`.\n" + \
-            f"To list previously archived channels, run `{cleanPrefix}list`."
+            f"To list other archived channels, run `{cleanPrefix}list`."
         await ctx.send(formatted)
 
 
