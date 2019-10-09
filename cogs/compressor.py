@@ -48,9 +48,9 @@ class Compressor(commands.Cog):
                 temporaryMessage = message
         
         # Return compression efficiency
-        compressionRatio = round(100 * len(compressedArchive) / len(archive))
+        compressionRatio = 100 - round(100 * len(compressedArchive) / len(archive))
         formatted = f"Compressed archive from {len(archive)} to {len(compressedArchive)} messages" + \
-                    f" ({compressionRatio}% compression ratio)."
+                    f" ({compressionRatio}% compression rate)."
 
         await ctx.send(formatted)
         # Return our compressed archive
