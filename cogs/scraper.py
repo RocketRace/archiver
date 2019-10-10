@@ -82,7 +82,7 @@ class Scraper(commands.Cog, name="Archiving:"):
                 ### === EMBEDS ===
 
                 # Copies the message embed data as-is
-                embeds = [e.to_dict() for e in message.embeds]
+                embeds = [e.to_dict() for e in message.embeds if e.type == "rich"]
 
                 ### === REACTIONS ===
 

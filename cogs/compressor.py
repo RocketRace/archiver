@@ -22,12 +22,30 @@ class Compressor(commands.Cog):
                     temporaryMessage["embeds"],
                     temporaryMessage["reactions"]
                 ])
+
+                # Webhook messages with only embeds can be merged together
+                canNotMergeEmbeds = any([
+                    message["content"],
+                    message["attachments"],
+                    temporaryMessage["reactions"],
+                    temporaryMessage["attachments"],
+                    len(temporaryMessage["embeds"]) + len(message["embeds"]) > 10,
+                    message["embeds"] == []
+                ])
+
                 # We can't merge two messages if the total character count of the contents exceeds 2000
                 mergedContent = temporaryMessage["content"] + "\n" + message["content"]
                 messageTooLong = len(mergedContent) > 2000
 
+                # Merge embeds if possible
+                if not canNotMergeEmbeds:
+                    mergedEmbeds = temporaryMessage["embeds"]
+                    mergedEmbeds.extend(message["embeds"])
+                    temporaryMessage = message
+                    temporaryMessage["embeds"] = mergedEmbeds
+
                 # In any of these cases, the temporary message is what we will clone.
-                if canNotCombine or messageTooLong:
+                elif canNotCombine or messageTooLong:
                     compressedArchive.append(temporaryMessage)
                     temporaryMessage = message
                 
