@@ -15,16 +15,21 @@ class Cloner(commands.Cog, name="Cloning:"):
 
     @commands.is_owner()
     @commands.command()
-    async def clone(self, ctx, path, *, channel: commands.TextChannelConverter()):
+    async def clone(self, ctx, ID, *, channel: commands.TextChannelConverter()):
         '''
-        Takes an archived channel by archive id and copies its contents to another channel.
+        Takes an archived channel and copies its contents to another channel.
+        Emulates an authentic channel using webhooks. Due to Discord ratelimiting, this may take several minutes.
+
+        __Parameters__
+        <ID> The ID of the archive to clone.
+        <channel> A channel name, id or mention. The channel to clone the archive into. 
         '''
         async with ctx.typing():
             # Searches through archived channels for the provided archive
             sourcePath = None
             for guild in listdir("archives/guilds"):
                 for sourceChannel in listdir(f"archives/guilds/{guild}"):
-                    if isfile(f"archives/guilds/{guild}/{sourceChannel}/{path}.json"):
+                    if isfile(f"archives/guilds/{guild}/{sourceChannel}/{ID}.json"):
                         sourcePath = f"archives/guilds/{guild}/{sourceChannel}"
             
             # If not found
@@ -33,7 +38,7 @@ class Cloner(commands.Cog, name="Cloning:"):
 
             # Opens the channel archive
             archive = None
-            with open(f"{sourcePath}/{path}.json") as archiveFile:
+            with open(f"{sourcePath}/{ID}.json") as archiveFile:
                 archive = load(archiveFile)
 
             # Messages in the archive
@@ -54,7 +59,7 @@ class Cloner(commands.Cog, name="Cloning:"):
             
             # Opens the channel metadata file
             metadata = None
-            with open(f"{sourcePath}/metadata_{path}.json") as metadataFile:
+            with open(f"{sourcePath}/metadata_{ID}.json") as metadataFile:
                 metadata = load(metadataFile)
             
             # Tweaks the channel name

@@ -26,7 +26,7 @@ class Utils(commands.Cog, name="Utilities:"):
     @commands.is_owner()
     async def logout(self, ctx):
         '''
-        Logs the bot out.
+        Logs the bot out and cancels any ongoing commands.
         '''
         await self.bot.logout()
 

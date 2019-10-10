@@ -15,7 +15,12 @@ class Scraper(commands.Cog, name="Archiving:"):
     @commands.command()
     async def archive(self, ctx, channel: commands.TextChannelConverter(), limit: int = 100):
         '''
-        Archives [limit] recent messages from the provided channel onto disk.
+        Archives messages from the provided channel onto disk.
+        Returns the ID of the archive.
+
+        __Parameters__
+        <channel> A channel name, id, or mention.
+        <limit> How many messages to archive. Defaults to 100. If set to 0, archives all messages.
         '''
         async with ctx.typing():
             # Feedback for the user
