@@ -119,7 +119,9 @@ class Scraper(commands.Cog, name="Archiving:"):
             history.reverse()
 
             # User feedback
-            note = f" (Only found {len(history)})" if len(history) < limit else ""
+            note = ""
+            if limit is not None:
+                note = f" (Only found {len(history)})" if len(history) < limit else ""
             await ctx.send(f"Scraped {len(history)} messages from {channel.mention}{note}.")
 
             # Compresses the message history

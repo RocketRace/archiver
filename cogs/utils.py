@@ -1,6 +1,7 @@
 import discord
 
 from discord.ext import commands
+from itertools   import islice, takewhile, repeat
 from json        import load
 from os          import listdir
 
@@ -91,9 +92,16 @@ class Utils(commands.Cog, name="Utilities:"):
         suffix = f"To clone an archive to a channel, run `{cleanPrefix}clone [archive ID] [target channel]`."
         archives.append(suffix) 
 
-        # Join the entries together
-        formatted = "\n".join(archives)
-        await ctx.send(formatted)
+        # Join the entries together in groups of 10
+        def splitEvery(n, iterable):
+            iterator = iter(iterable)
+            return takewhile(bool, (list(islice(iterator, n)) for _ in repeat(None)))
+        archivePartitions = splitEvery(10, archives)
+
+        # Sends each group
+        for partition in archivePartitions:
+            formatted = "\n".join(partition)
+            await ctx.send(formatted)
 
 
 
