@@ -60,7 +60,7 @@ async def on_command_error(ctx, error):
     await ctx.send(" ", embed=embed)
 
 # Loads the bot's modules
-modules = ("cogs.scraper", "cogs.cloner", "cogs.compressor", "cogs.utils")
+modules = ("cogs.scraper", "cogs.cloner", "cogs.compressor", "cogs.utils", "cogs.batch")
 if __name__ == "__main__":
     for module in modules:
         bot.load_extension(module)
